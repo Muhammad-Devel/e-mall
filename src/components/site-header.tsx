@@ -1,0 +1,95 @@
+import Link from "next/link";
+import Image from "next/image";
+import { headers } from "next/headers";
+import { Heart, ShoppingBag, User } from "lucide-react";
+import { auth, signOut } from "@/auth";
+import { Button } from "@/components/ui/button";
+import { ScriptToggle } from "@/components/script-toggle";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { appOrigin } from "@/lib/domain";
+
+export async function SiteHeader() {
+  const session = await auth();
+  const host = (await headers()).get("host") ?? "";
+  const appUrl = appOrigin(host);
+
+  return (
+    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+        <Link href="/" data-no-transliterate className="flex items-center gap-2 font-semibold">
+          <Image src="/logo-96.png" alt="" width={28} height={28} className="rounded-md" priority />
+          e-mall.uz
+        </Link>
+
+        {session?.user ? (
+          <div className="flex items-center gap-1 sm:gap-2">
+            <ScriptToggle className="hidden sm:flex" />
+            <ThemeToggle className="hidden sm:flex" />
+            <Button render={<Link href="/favorites" />} nativeButton={false} variant="ghost" size="icon" aria-label="Sevimlilar">
+              <Heart className="size-4" />
+            </Button>
+            <Button
+              render={<Link href="/cart" />}
+              nativeButton={false}
+              variant="ghost"
+              size="icon"
+              aria-label="Savat"
+              className="hidden sm:inline-flex"
+            >
+              <ShoppingBag className="size-4" />
+            </Button>
+            <Button
+              render={<Link href="/account" />}
+              nativeButton={false}
+              variant="ghost"
+              size="icon"
+              aria-label="Akkauntim"
+              className="hidden sm:inline-flex"
+            >
+              <User className="size-4" />
+            </Button>
+            {session.user.role !== "CUSTOMER" && (
+              <Button
+                render={<Link href={`${appUrl}${dashboardPathFor(session.user.role)}`} />}
+                nativeButton={false}
+                variant="ghost"
+                size="sm"
+                className="hidden sm:inline-flex"
+              >
+                Boshqaruv paneli
+              </Button>
+            )}
+            <form
+              action={async () => {
+                "use server";
+                await signOut({ redirectTo: "/" });
+              }}
+            >
+              <Button size="sm" variant="outline" type="submit">
+                Chiqish
+              </Button>
+            </form>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <ScriptToggle className="hidden sm:flex" />
+            <ThemeToggle className="hidden sm:flex" />
+            <Button render={<Link href="/login" />} nativeButton={false} variant="ghost" size="sm">
+              Kirish
+            </Button>
+            <Button render={<Link href={`${appUrl}/register`} />} nativeButton={false} size="sm">
+              Do&apos;kon ochish
+            </Button>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function dashboardPathFor(role: string) {
+  if (role === "SUPER_ADMIN") return "/dashboard/admin";
+  if (role === "OWNER") return "/dashboard/owner";
+  if (role === "SELLER") return "/dashboard/pos";
+  return "/";
+}

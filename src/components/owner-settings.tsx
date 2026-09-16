@@ -1,0 +1,349 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { User, Store as StoreIcon, MapPin, Palette } from "lucide-react";
+import { updateStoreIdentity, updateStoreContact } from "@/actions/store";
+import { slugify } from "@/lib/domain";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { ImageUpload } from "@/components/image-upload";
+import { PhoneInput } from "@/components/phone-input";
+import { Switch } from "@/components/ui/switch";
+import { LocationPicker } from "@/components/location-picker";
+import type { ServiceMode } from "@/components/location-picker-inner";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ProfileTab } from "@/components/settings/profile-tab";
+import { SiteSettingsTab } from "@/components/settings/site-settings-tab";
+
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? "e-mall.uz";
+
+function StoreIdentityTab({
+  name,
+  description,
+  slug: initialSlug,
+  logoUrl,
+  bannerUrl,
+}: {
+  name: string;
+  description: string;
+  slug: string;
+  logoUrl: string | null;
+  bannerUrl: string | null;
+}) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [slug, setSlug] = useState(initialSlug);
+
+  function handleSubmit(formData: FormData) {
+    startTransition(async () => {
+      const result = await updateStoreIdentity({
+        name: formData.get("name"),
+        description: formData.get("description"),
+        slug,
+        logoUrl: formData.get("logoUrl"),
+        bannerUrl: formData.get("bannerUrl"),
+      });
+      if (result.ok) {
+        toast.success("Do'kon ma'lumotlari saqlandi");
+        router.refresh();
+      } else {
+        toast.error(result.error);
+      }
+    });
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Do&apos;kon ma&apos;lumotlari</CardTitle>
+        <CardDescription>Do&apos;koningiz nomi, tavsifi, subdomeni va rasmlari</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form action={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Do&apos;kon nomi</Label>
+            <Input id="name" name="name" defaultValue={name} required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="description">Tavsif (ixtiyoriy)</Label>
+            <Textarea id="description" name="description" defaultValue={description} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="slug">Subdomen</Label>
+            <div className="flex items-center gap-1">
+              <Input id="slug" value={slug} onChange={(e) => setSlug(slugify(e.target.value))} required />
+              <span data-no-transliterate className="shrink-0 text-sm text-muted-foreground">
+                .{ROOT_DOMAIN}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Do&apos;kon vitrinangiz manzili:{" "}
+              <span data-no-transliterate className="font-medium text-foreground">
+                {slug || "..."}.{ROOT_DOMAIN}
+              </span>
+              . O&apos;zgartirsangiz, eski manzil ishlamay qoladi.
+            </p>
+          </div>
+          <div className="space-y-1.5">
+            <ImageUpload name="logoUrl" defaultUrl={logoUrl} label="Avatar (logotip)" />
+            <p className="text-xs text-muted-foreground">Tavsiya etilgan o&apos;lcham: 400×400px (kvadrat rasm), hajmi 5 MB gacha.</p>
+          </div>
+          <div className="space-y-1.5">
+            <ImageUpload name="bannerUrl" defaultUrl={bannerUrl} label="Banner rasm" />
+            <p className="text-xs text-muted-foreground">
+              Tavsiya etilgan o&apos;lcham: 1600×400px (kenglik balandlikdan 4 baravar katta), hajmi 5 MB gacha. Rasm
+              sahifa kengligiga moslab kesiladi, shuning uchun asosiy qism (matn, logotip) markazda joylashgani
+              ma&apos;qul.
+            </p>
+          </div>
+          <Button type="submit" disabled={pending}>
+            {pending ? "Saqlanmoqda..." : "Saqlash"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function StoreContactTab({
+  address,
+  latitude,
+  longitude,
+  serviceRadiusKm,
+  servicePolygon,
+  locationUrl,
+  workingHours,
+  estimatedDeliveryTime,
+  contactPhone,
+  instagramUrl,
+  telegramUrl,
+  useEcourier: initialUseEcourier,
+}: {
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
+  serviceRadiusKm: number | null;
+  servicePolygon: { lat: number; lng: number }[] | null;
+  locationUrl: string;
+  workingHours: string;
+  estimatedDeliveryTime: string;
+  contactPhone: string | null;
+  instagramUrl: string;
+  telegramUrl: string;
+  useEcourier: boolean;
+}) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
+    latitude != null && longitude != null ? { lat: latitude, lng: longitude } : null
+  );
+  const [serviceMode, setServiceMode] = useState<ServiceMode>(servicePolygon && servicePolygon.length >= 3 ? "polygon" : "radius");
+  const [radiusKm, setRadiusKm] = useState<number | null>(serviceRadiusKm);
+  const [polygon, setPolygon] = useState(servicePolygon ?? []);
+  const [useEcourier, setUseEcourier] = useState(initialUseEcourier);
+
+  function handleSubmit(formData: FormData) {
+    startTransition(async () => {
+      const result = await updateStoreContact({
+        address: formData.get("address"),
+        latitude: coords?.lat ?? null,
+        longitude: coords?.lng ?? null,
+        serviceRadiusKm: serviceMode === "radius" ? radiusKm : null,
+        servicePolygon: serviceMode === "polygon" ? polygon : null,
+        locationUrl: formData.get("locationUrl"),
+        workingHours: formData.get("workingHours"),
+        estimatedDeliveryTime: formData.get("estimatedDeliveryTime"),
+        contactPhone: formData.get("contactPhone"),
+        instagramUrl: formData.get("instagramUrl"),
+        telegramUrl: formData.get("telegramUrl"),
+        useEcourier,
+      });
+      if (result.ok) {
+        toast.success("Bog'lanish ma'lumotlari saqlandi");
+        router.refresh();
+      } else {
+        toast.error(result.error);
+      }
+    });
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Bog&apos;lanish</CardTitle>
+        <CardDescription>Bu ma&apos;lumotlar do&apos;koningiz sahifasida mijozlarga ko&apos;rinadi</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form action={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="address">Manzil</Label>
+            <Textarea id="address" name="address" defaultValue={address} placeholder="Shahar, ko'cha, uy raqami" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="locationUrl">Lokatsiya havolasi (Google/Yandex Maps)</Label>
+            <Input id="locationUrl" name="locationUrl" type="url" defaultValue={locationUrl} placeholder="https://maps.app.goo.gl/..." />
+          </div>
+          <div className="space-y-2">
+            <Label>Xarita va xizmat hududi</Label>
+            <LocationPicker
+              value={coords}
+              onChange={setCoords}
+              serviceMode={serviceMode}
+              onServiceModeChange={setServiceMode}
+              radiusKm={radiusKm}
+              onRadiusKmChange={setRadiusKm}
+              polygon={polygon}
+              onPolygonChange={setPolygon}
+            />
+            <p className="text-xs text-muted-foreground">
+              Bosh sahifada faqat shu hududga kiruvchi mijozlarga do&apos;koningiz ko&apos;rsatiladi.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 rounded-md border p-3">
+            <Switch id="useEcourier" checked={useEcourier} onCheckedChange={setUseEcourier} />
+            <div>
+              <Label htmlFor="useEcourier">Buyurtmalarni e-courier orqali yetkazish</Label>
+              <p className="text-xs text-muted-foreground">
+                O&apos;chirilsa, &quot;Jo&apos;natildi&quot; deb belgilangan buyurtmalar kuryerga avtomatik uzatilmaydi — o&apos;z
+                kuryeringiz bilan yetkazasiz.
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="workingHours">Ish vaqti</Label>
+            <Input id="workingHours" name="workingHours" defaultValue={workingHours} placeholder="Dush-Shan: 09:00 - 21:00" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="estimatedDeliveryTime">Taxminiy yetkazib berish vaqti (ixtiyoriy)</Label>
+            <Input
+              id="estimatedDeliveryTime"
+              name="estimatedDeliveryTime"
+              defaultValue={estimatedDeliveryTime}
+              placeholder="15-25 daqiqa"
+            />
+            <p className="text-xs text-muted-foreground">
+              Do&apos;koningiz sahifasida badge sifatida ko&apos;rsatiladi. Bo&apos;sh qoldirilsa, chiqmaydi.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="contactPhone">Aloqa uchun telefon raqami (ixtiyoriy)</Label>
+            <PhoneInput id="contactPhone" name="contactPhone" defaultValue={contactPhone} required={false} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="instagramUrl">Instagram havolasi</Label>
+            <Input id="instagramUrl" name="instagramUrl" type="url" defaultValue={instagramUrl} placeholder="https://instagram.com/..." />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="telegramUrl">Telegram havolasi</Label>
+            <Input id="telegramUrl" name="telegramUrl" type="url" defaultValue={telegramUrl} placeholder="https://t.me/..." />
+          </div>
+          <Button type="submit" disabled={pending}>
+            {pending ? "Saqlanmoqda..." : "Saqlash"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function OwnerSettings({
+  userFullName,
+  userPhone,
+  userTelegramPhone,
+  storeName,
+  storeDescription,
+  storeSlug,
+  storeLogoUrl,
+  storeBannerUrl,
+  storeAddress,
+  storeLatitude,
+  storeLongitude,
+  storeServiceRadiusKm,
+  storeServicePolygon,
+  storeLocationUrl,
+  storeWorkingHours,
+  storeEstimatedDeliveryTime,
+  storeContactPhone,
+  storeInstagramUrl,
+  storeTelegramUrl,
+  storeUseEcourier,
+}: {
+  userFullName: string;
+  userPhone: string;
+  userTelegramPhone: string | null;
+  storeName: string;
+  storeDescription: string;
+  storeSlug: string;
+  storeLogoUrl: string | null;
+  storeBannerUrl: string | null;
+  storeAddress: string;
+  storeLatitude: number | null;
+  storeLongitude: number | null;
+  storeServiceRadiusKm: number | null;
+  storeServicePolygon: { lat: number; lng: number }[] | null;
+  storeLocationUrl: string;
+  storeWorkingHours: string;
+  storeEstimatedDeliveryTime: string;
+  storeContactPhone: string | null;
+  storeInstagramUrl: string;
+  storeTelegramUrl: string;
+  storeUseEcourier: boolean;
+}) {
+  return (
+    <div className="max-w-lg space-y-4">
+      <h1 className="text-xl font-semibold">Sozlamalar</h1>
+      <Tabs defaultValue="profile">
+        <div className="overflow-x-auto">
+          <TabsList variant="line">
+            <TabsTrigger value="profile" className="gap-1.5">
+              <User />
+              Foydalanuvchi
+            </TabsTrigger>
+            <TabsTrigger value="store" className="gap-1.5">
+              <StoreIcon />
+              Do&apos;kon
+            </TabsTrigger>
+            <TabsTrigger value="contact" className="gap-1.5">
+              <MapPin />
+              Bog&apos;lanish
+            </TabsTrigger>
+            <TabsTrigger value="site" className="gap-1.5">
+              <Palette />
+              Sayt
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="profile" keepMounted>
+          <ProfileTab fullName={userFullName} phone={userPhone} telegramPhone={userTelegramPhone} />
+        </TabsContent>
+        <TabsContent value="store" keepMounted>
+          <StoreIdentityTab name={storeName} description={storeDescription} slug={storeSlug} logoUrl={storeLogoUrl} bannerUrl={storeBannerUrl} />
+        </TabsContent>
+        <TabsContent value="contact" keepMounted>
+          <StoreContactTab
+            address={storeAddress}
+            latitude={storeLatitude}
+            longitude={storeLongitude}
+            serviceRadiusKm={storeServiceRadiusKm}
+            servicePolygon={storeServicePolygon}
+            locationUrl={storeLocationUrl}
+            workingHours={storeWorkingHours}
+            estimatedDeliveryTime={storeEstimatedDeliveryTime}
+            contactPhone={storeContactPhone}
+            instagramUrl={storeInstagramUrl}
+            telegramUrl={storeTelegramUrl}
+            useEcourier={storeUseEcourier}
+          />
+        </TabsContent>
+        <TabsContent value="site" keepMounted>
+          <SiteSettingsTab />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
