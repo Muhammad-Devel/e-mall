@@ -19,7 +19,7 @@ export function StoreStatusActions({ storeId, status }: { storeId: string; statu
   return (
     <div className="flex gap-2">
       {status !== "ACTIVE" && (
-        <Button size="sm" disabled={pending} onClick={() => updateStatus("ACTIVE")}>
+        <Button size="sm" variant="success" disabled={pending} onClick={() => updateStatus("ACTIVE")}>
           Tasdiqlash
         </Button>
       )}

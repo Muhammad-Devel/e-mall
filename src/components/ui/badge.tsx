@@ -10,6 +10,9 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        success: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300 [a]:hover:bg-emerald-200",
+        warning: "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300 [a]:hover:bg-amber-200",
+        info: "bg-sky-100 text-sky-800 dark:bg-sky-950/50 dark:text-sky-300 [a]:hover:bg-sky-200",
         secondary:
           "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive:

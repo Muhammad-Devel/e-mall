@@ -225,9 +225,9 @@ export function PosScreen({
   }
 
   return (
-    <div className="relative pb-20 md:pb-0 md:flex md:gap-6">
+    <div className="relative pb-20 md:pb-0 md:flex md:gap-8">
       <div className="md:flex-1">
-        <h1 className="mb-4 text-xl font-semibold">POS</h1>
+        <h1 className="mb-5 text-2xl font-semibold">POS</h1>
 
         {categories.length > 0 && (
           <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
@@ -262,13 +262,13 @@ export function PosScreen({
             placeholder="Mahsulot qidirish..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1"
+            className="h-11 flex-1 text-base"
           />
-          <Button type="button" variant="outline" size="icon" onClick={() => setScannerOpen(true)} title="Shtrix-kod skanerlash">
-            <ScanLine className="size-4" />
+          <Button type="button" variant="outline" size="icon-lg" onClick={() => setScannerOpen(true)} title="Shtrix-kod skanerlash">
+            <ScanLine className="size-5" />
           </Button>
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
           {filtered.map((product) => {
             const discountActive = isDiscountActive(
               product.discountPrice ? Number(product.discountPrice) : null,
@@ -279,13 +279,13 @@ export function PosScreen({
                 <Card className="h-full overflow-hidden transition-all hover:border-brand hover:shadow-md active:scale-[0.98]">
                   <div className="relative">
                     {product.imageUrl ? (
-                      <div className="aspect-square overflow-hidden bg-muted">
+                      <div className="aspect-[4/3] overflow-hidden bg-muted">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={product.imageUrl} alt="" className="size-full object-cover" />
                       </div>
                     ) : (
-                      <div className="flex aspect-square items-center justify-center bg-muted">
-                        <ShoppingCart className="size-6 text-muted-foreground" />
+                      <div className="flex aspect-[4/3] items-center justify-center bg-muted">
+                        <ShoppingCart className="size-8 text-muted-foreground" />
                       </div>
                     )}
                     {product.isNew && (
@@ -299,18 +299,18 @@ export function PosScreen({
                       </Badge>
                     )}
                   </div>
-                  <CardContent className="p-3">
-                    <p className="line-clamp-2 text-sm font-medium">{product.name}</p>
+                  <CardContent className="p-4">
+                    <p className="line-clamp-2 text-base font-medium">{product.name}</p>
                     {discountActive ? (
                       <>
                         <div className="mt-1 flex items-center gap-1.5">
                           <span className="text-xs text-muted-foreground line-through">{formatSom(product.price)}</span>
-                          <span className="text-sm font-semibold text-destructive">{formatSom(product.discountPrice!)} so&apos;m</span>
+                          <span className="text-base font-semibold text-destructive">{formatSom(product.discountPrice!)} so&apos;m</span>
                         </div>
                         <p className="text-[11px] text-destructive">{formatDateTime(product.discountEndsAt!)} gacha</p>
                       </>
                     ) : (
-                      <p className="mt-1 text-sm font-semibold text-brand">{formatSom(product.price)} so&apos;m</p>
+                      <p className="mt-1 text-base font-semibold text-brand">{formatSom(product.price)} so&apos;m</p>
                     )}
                     <p className="text-xs text-muted-foreground">Qoldiq: {product.stock}</p>
                   </CardContent>
@@ -327,8 +327,8 @@ export function PosScreen({
       <BarcodeScannerDialog open={scannerOpen} onOpenChange={setScannerOpen} onDetected={handleBarcodeScanned} />
 
       {/* Desktop billing panel */}
-      <div className="hidden w-80 shrink-0 md:block">
-        <Card className="p-4">
+      <div className="hidden w-96 shrink-0 md:block">
+        <Card className="p-5">
           <CartPanel
             tabs={tabs}
             activeTab={activeTab}
@@ -440,7 +440,7 @@ function CartPanel({
 }) {
   const [couponInput, setCouponInput] = useState("");
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
         {tabs.map((tab) => {
           const isActive = tab.id === activeTab.id;
@@ -449,13 +449,13 @@ function CartPanel({
             <div
               key={tab.id}
               className={cn(
-                "flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium",
+                "flex shrink-0 items-center gap-1 rounded-full border px-3 py-1.5 text-sm font-medium",
                 isActive ? "border-brand bg-brand/10 text-brand" : "text-muted-foreground"
               )}
             >
               <button type="button" onClick={() => setActiveTabId(tab.id)} className="flex items-center gap-1">
                 {tab.label}
-                {count > 0 && <span className="rounded-full bg-current/10 px-1.5">{count}</span>}
+                {count > 0 && <span className="rounded-full bg-current/10 px-2">{count}</span>}
               </button>
               {tabs.length > 1 && (
                 <button type="button" onClick={() => closeTab(tab.id)} aria-label={`${tab.label} savatini yopish`}>
@@ -468,7 +468,7 @@ function CartPanel({
         <button
           type="button"
           onClick={newTab}
-          className="flex shrink-0 items-center gap-1 rounded-full border border-dashed px-2.5 py-1 text-xs font-medium text-muted-foreground hover:border-brand hover:text-brand"
+          className="flex shrink-0 items-center gap-1 rounded-full border border-dashed px-3 py-1.5 text-sm font-medium text-muted-foreground hover:border-brand hover:text-brand"
         >
           <Plus className="size-3" /> Yangi savat
         </button>
@@ -477,21 +477,21 @@ function CartPanel({
       <div className="space-y-2">
         {activeTab.lines.length === 0 && <p className="text-sm text-muted-foreground">Savat bo&apos;sh</p>}
         {activeTab.lines.map((line) => (
-          <div key={line.productId} className="flex items-center justify-between gap-2 border-b pb-2">
+          <div key={line.productId} className="flex items-center justify-between gap-3 border-b pb-3">
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{line.name}</p>
+              <p className="truncate text-base font-medium">{line.name}</p>
               <p className="text-xs text-muted-foreground">{formatSom(line.price)} so&apos;m</p>
             </div>
             <div className="flex items-center gap-1">
-              <Button size="icon" variant="outline" className="size-7" onClick={() => changeQty(line.productId, -1)}>
-                <Minus className="size-3" />
+              <Button size="icon" variant="outline" className="size-8" onClick={() => changeQty(line.productId, -1)}>
+                <Minus className="size-4" />
               </Button>
-              <span className="w-6 text-center text-sm">{line.qty}</span>
-              <Button size="icon" variant="outline" className="size-7" onClick={() => changeQty(line.productId, 1)}>
-                <Plus className="size-3" />
+              <span className="w-7 text-center text-base">{line.qty}</span>
+              <Button size="icon" variant="outline" className="size-8" onClick={() => changeQty(line.productId, 1)}>
+                <Plus className="size-4" />
               </Button>
-              <Button size="icon" variant="ghost" className="size-7" onClick={() => removeLine(line.productId)}>
-                <Trash2 className="size-3" />
+              <Button size="icon" variant="ghost" className="size-8" onClick={() => removeLine(line.productId)}>
+                <Trash2 className="size-4" />
               </Button>
             </div>
           </div>
@@ -539,7 +539,7 @@ function CartPanel({
           type="button"
           onClick={() => setPaymentMethod("CASH")}
           className={cn(
-            "flex flex-1 items-center justify-center gap-2 rounded-md border py-2 text-sm",
+            "flex flex-1 items-center justify-center gap-2 rounded-md border py-3 text-base",
             activeTab.paymentMethod === "CASH" ? "border-brand bg-brand/10 font-medium text-brand" : "text-muted-foreground"
           )}
         >
@@ -549,7 +549,7 @@ function CartPanel({
           type="button"
           onClick={() => setPaymentMethod("CARD")}
           className={cn(
-            "flex flex-1 items-center justify-center gap-2 rounded-md border py-2 text-sm",
+            "flex flex-1 items-center justify-center gap-2 rounded-md border py-3 text-base",
             activeTab.paymentMethod === "CARD" ? "border-brand bg-brand/10 font-medium text-brand" : "text-muted-foreground"
           )}
         >
@@ -569,7 +569,7 @@ function CartPanel({
           </div>
         </div>
       )}
-      <div className="flex items-center justify-between text-lg font-semibold">
+      <div className="flex items-center justify-between text-2xl font-semibold">
         <span>Jami</span>
         <span>{formatSom(total)} so&apos;m</span>
       </div>
@@ -577,6 +577,7 @@ function CartPanel({
       <div className="flex gap-2">
         <Button
           variant="outline"
+          size="lg"
           className="flex-1 border-destructive/30 text-destructive hover:bg-destructive/10"
           disabled={activeTab.lines.length === 0 || pending}
           onClick={clearActiveTab}
@@ -584,7 +585,9 @@ function CartPanel({
           Bekor qilish
         </Button>
         <Button
-          className="flex-1 bg-brand text-brand-foreground hover:bg-brand/90"
+          variant="success"
+          size="lg"
+          className="flex-1"
           disabled={activeTab.lines.length === 0 || pending}
           onClick={checkout}
         >

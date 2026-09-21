@@ -146,7 +146,7 @@ export function CouponsManager({ initialCoupons }: { initialCoupons: Coupon[] })
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-mono font-semibold">{c.code}</span>
-                <Badge variant="secondary">
+                <Badge variant={c.active ? "success" : "secondary"}>
                   {c.type === "PERCENT" ? `${c.value}%` : `${formatSom(c.value)} so'm`}
                 </Badge>
                 {!c.active && <Badge variant="outline">O&apos;chirilgan</Badge>}

@@ -30,7 +30,7 @@ export default async function AdminStoresPage() {
                 </p>
               </div>
               <Badge
-                variant={store.status === "ACTIVE" ? "default" : store.status === "SUSPENDED" ? "destructive" : "secondary"}
+                variant={store.status === "ACTIVE" ? "success" : store.status === "SUSPENDED" ? "destructive" : "warning"}
               >
                 {STATUS_LABEL[store.status]}
               </Badge>

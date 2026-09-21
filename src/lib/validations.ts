@@ -106,12 +106,20 @@ export const productSchema = z
     costPrice: z.coerce.number().min(0, "Kelgan narx manfiy bo'lishi mumkin emas").optional().nullable(),
     stock: z.coerce.number().int().min(0, "Qoldiq manfiy bo'lishi mumkin emas"),
     lowStockThreshold: z.coerce.number().int().min(0, "Chegara manfiy bo'lishi mumkin emas").optional().nullable(),
-    expiryDate: z.string().optional().nullable(),
+    expiryDate: z
+      .string()
+      .optional()
+      .nullable()
+      .refine((value) => !value || !Number.isNaN(new Date(value).getTime()), "Yaroqlilik sanasi noto'g'ri"),
     supplier: z.string().optional().nullable(),
     isPublished: z.coerce.boolean().default(false),
     isNew: z.coerce.boolean().default(false),
     discountPrice: z.coerce.number().positive("Chegirma narxi musbat bo'lishi kerak").optional().nullable(),
-    discountEndsAt: z.string().optional().nullable(),
+    discountEndsAt: z
+      .string()
+      .optional()
+      .nullable()
+      .refine((value) => !value || !Number.isNaN(new Date(value).getTime()), "Chegirma tugash vaqti noto'g'ri"),
   })
   .refine((data) => Boolean(data.catalogProductId) !== Boolean(data.newCatalogProduct), {
     message: "Mavjud mahsulotni tanlang yoki yangisini yarating",

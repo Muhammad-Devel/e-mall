@@ -57,7 +57,13 @@ export default async function OrdersPage() {
                   </div>
                   <Badge
                     variant={
-                      order.status === "CANCELLED" ? "destructive" : order.status === "DELIVERED" ? "default" : "secondary"
+                      order.status === "CANCELLED"
+                        ? "destructive"
+                        : order.status === "DELIVERED"
+                          ? "success"
+                          : order.status === "PENDING"
+                            ? "warning"
+                            : "info"
                     }
                   >
                     {STATUS_LABEL[order.status]}

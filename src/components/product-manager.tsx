@@ -297,11 +297,16 @@ export function ProductManager({
           >
             <Plus className="size-4" /> Mahsulot qo&apos;shish
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-5xl sm:max-w-[1100px]">
             <DialogHeader>
-              <DialogTitle>{editing ? "Mahsulotni tahrirlash" : "Yangi mahsulot"}</DialogTitle>
+              <DialogTitle className="text-xl">{editing ? "Mahsulotni tahrirlash" : "Yangi mahsulot qo&apos;shish"}</DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                {editing
+                  ? "Mahsulot ma&apos;lumotlarini yangilang va saqlang."
+                  : "Katalog ma&apos;lumotlari va do&apos;kon qoldig&apos;ini kiriting."}
+              </p>
             </DialogHeader>
-            <form action={handleSubmitProduct} className="space-y-4">
+            <form action={handleSubmitProduct} className="space-y-6">
               {editing ? (
                 isEditingCreator ? (
                   <CatalogFields
@@ -329,19 +334,24 @@ export function ProductManager({
 
               {(editing || selectedCatalog || creatingNew) && (
                 <>
-                  <div className="grid grid-cols-2 gap-3">
+                  <section className="space-y-4 rounded-xl bg-muted/30 p-4">
+                    <div>
+                      <h3 className="font-semibold">Savdo va qoldiq</h3>
+                      <p className="text-xs text-muted-foreground">Narx, boshlang&apos;ich miqdor va ombor ma&apos;lumotlari.</p>
+                    </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="price">Sotish narxi (so&apos;m)</Label>
-                      <Input id="price" name="price" type="number" step="0.01" min="0" defaultValue={editing?.price} required />
+                      <Input id="price" name="price" type="number" step="0.01" min="0.01" defaultValue={editing?.price} required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="costPrice">Sotib olingan narx (so&apos;m)</Label>
                       <Input id="costPrice" name="costPrice" type="number" step="0.01" min="0" defaultValue={editing?.costPrice ?? ""} />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="stock">{editing ? "Qoldiq" : "Boshlang'ich miqdor"}</Label>
+                      <Label htmlFor="stock">{editing ? "Qoldiq" : "Boshlang&apos;ich miqdor"}</Label>
                       <Input id="stock" name="stock" type="number" min="0" defaultValue={editing?.stock ?? 0} required />
                     </div>
                     <div className="space-y-2">
@@ -355,7 +365,7 @@ export function ProductManager({
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="expiryDate">Yaroqlilik muddati (ixtiyoriy)</Label>
                       <Input
@@ -376,6 +386,14 @@ export function ProductManager({
                       <Input id="supplier" name="supplier" />
                     </div>
                   )}
+                  </section>
+                  <section className="space-y-4 rounded-xl bg-muted/30 p-4">
+                    <div>
+                      <h3 className="font-semibold">Chegirma</h3>
+                      <p className="text-xs text-muted-foreground">
+                        Chegirma narxini kiritsangiz, uning amal qilish muddatini ham belgilang.
+                      </p>
+                    </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                       <Label htmlFor="discountPrice">Chegirma narxi (ixtiyoriy)</Label>
@@ -384,12 +402,12 @@ export function ProductManager({
                         name="discountPrice"
                         type="number"
                         step="0.01"
-                        min="0"
+                        min="0.01"
                         defaultValue={editing?.discountPrice ?? ""}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="discountEndsAt">Chegirma tugash vaqti</Label>
+                      <Label htmlFor="discountEndsAt">Chegirmaning amal qilish muddati</Label>
                       <Input
                         id="discountEndsAt"
                         name="discountEndsAt"
@@ -398,6 +416,12 @@ export function ProductManager({
                       />
                     </div>
                   </div>
+                  </section>
+                  <section className="space-y-3 rounded-xl bg-muted/30 p-4">
+                    <div>
+                      <h3 className="font-semibold">Ko&apos;rinish</h3>
+                      <p className="text-xs text-muted-foreground">Mahsulotni vitrina va yangiliklar bo&apos;limida ko&apos;rsatishni boshqaring.</p>
+                    </div>
                   <div className="flex flex-wrap items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Switch id="isPublished" name="isPublished" defaultChecked={editing?.isPublished} />
@@ -408,8 +432,9 @@ export function ProductManager({
                       <Label htmlFor="isNew">Yangilik</Label>
                     </div>
                   </div>
+                  </section>
                   <DialogFooter>
-                    <Button type="submit" disabled={pending}>
+                    <Button type="submit" variant="success" size="lg" disabled={pending}>
                       {editing ? "Saqlash" : "Qo'shish"}
                     </Button>
                   </DialogFooter>
@@ -556,7 +581,7 @@ export function ProductManager({
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={p.isPublished ? "default" : "secondary"}>{p.isPublished ? "Ha" : "Yo'q"}</Badge>
+                    <Badge variant={p.isPublished ? "success" : "secondary"}>{p.isPublished ? "Ha" : "Yo'q"}</Badge>
                   </TableCell>
                   <TableCell className="flex justify-end gap-1">
                     {p.catalogProduct.barcode && (

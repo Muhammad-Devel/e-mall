@@ -27,7 +27,7 @@ export function OwnerLiveFeed() {
     <Card>
       <CardHeader className="flex-row items-center justify-between space-y-0">
         <CardTitle className="text-sm">Jonli oqim</CardTitle>
-        <Badge variant={connected ? "default" : "secondary"} className="text-xs">
+        <Badge variant={connected ? "success" : "warning"} className="text-xs">
           {connected ? "Ulangan" : "Ulanmoqda..."}
         </Badge>
       </CardHeader>

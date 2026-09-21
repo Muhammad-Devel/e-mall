@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTransition } from "react";
-import { ScanLine, Search, Loader2 } from "lucide-react";
+import { ScanLine, Search, Loader2, Barcode } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { lookupBarcode, type SoliqLookupResult } from "@/lib/soliq";
@@ -40,12 +40,21 @@ export function BarcodeLookup({
   }
 
   return (
-    <div className="space-y-2 rounded-md border p-3">
-      <p className="text-xs font-medium text-muted-foreground">
-        Shtrix-kod orqali qidirish (soliq.uz MXIK bazasidan)
-      </p>
-      <div className="flex gap-2">
+    <div className="space-y-3 rounded-xl bg-brand/5 p-4">
+      <div className="flex items-start gap-2.5">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand">
+          <Barcode className="size-5" />
+        </div>
+        <div>
+          <p className="font-semibold">Shtrix-kod orqali to&apos;ldirish</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Soliq.uz MXIK bazasidan mahsulot ma&apos;lumotlarini avtomatik toping.
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row">
         <Input
+          aria-label="Shtrix-kod"
           inputMode="numeric"
           placeholder="Shtrix-kodni kiriting"
           value={code}
@@ -56,13 +65,17 @@ export function BarcodeLookup({
               if (code) runLookup(code);
             }
           }}
+          className="h-10 flex-1 bg-background"
         />
-        <Button type="button" variant="outline" size="icon" onClick={() => setScannerOpen(true)} title="Kamera bilan skanerlash">
-          <ScanLine className="size-4" />
-        </Button>
-        <Button type="button" variant="outline" size="icon" disabled={!code || pending} onClick={() => runLookup(code)} title="Qidirish">
-          {pending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
-        </Button>
+        <div className="flex gap-2 sm:shrink-0">
+          <Button type="button" variant="outline" size="lg" className="flex-1 sm:flex-none" onClick={() => setScannerOpen(true)} title="Kamera bilan skanerlash">
+            <ScanLine className="size-4" /> <span className="sm:hidden">Skanerlash</span>
+          </Button>
+          <Button type="button" variant="default" size="lg" className="flex-1 sm:flex-none" disabled={!code || pending} onClick={() => runLookup(code)} title="Qidirish">
+            {pending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
+            <span className="sm:hidden">Qidirish</span>
+          </Button>
+        </div>
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}
       <BarcodeScannerDialog

@@ -13,13 +13,13 @@ export function StepIndicator({ step, labels }: { step: number; labels: [string,
             <div
               className={cn(
                 "flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors",
-                done || active ? "bg-brand text-brand-foreground" : "bg-muted text-muted-foreground"
+                done || active ? "bg-emerald-600 text-white dark:bg-emerald-500" : "bg-muted text-muted-foreground"
               )}
             >
               {done ? <Check className="size-3.5" /> : n}
             </div>
             <span className={cn("text-xs font-medium", active ? "text-foreground" : "text-muted-foreground")}>{label}</span>
-            {n < labels.length && <div className={cn("h-px flex-1", done ? "bg-brand" : "bg-border")} />}
+            {n < labels.length && <div className={cn("h-px flex-1", done ? "bg-emerald-600 dark:bg-emerald-500" : "bg-border")} />}
           </div>
         );
       })}

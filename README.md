@@ -32,7 +32,8 @@ npm run dev
 `.env` faylida quyidagilar avtomatik sozlangan (lokal dev uchun):
 
 - `DATABASE_URL` — `prisma dev` bergan lokal Postgres manzili
-- `NEXTAUTH_SECRET`, `NEXTAUTH_URL`
+- `AUTH_SECRET` — Auth.js sessionlarini imzolash uchun uzun tasodifiy secret (`NEXTAUTH_SECRET` ham fallback sifatida qo'llanadi)
+- `NEXTAUTH_URL`
 - `NEXT_PUBLIC_ROOT_DOMAIN=e-mall.uz`
 - `NEXT_PUBLIC_REALTIME_URL=http://localhost:4000`
 - `REALTIME_JWT_SECRET`, `REALTIME_API_KEY`
@@ -62,15 +63,20 @@ http://test-market.localhost:3000
 ### Asosiy ilova — Vercel
 
 1. Repo'ni Vercel'ga ulang, quyidagi environment variable'larni kiriting:
-   - `DATABASE_URL` — Neon Postgres connection string
-   - `NEXTAUTH_SECRET` — tasodifiy uzun string (`openssl rand -base64 32`)
+   - `DATABASE_URL` — Neon pooled Postgres connection string
+   - `DATABASE_URL_UNPOOLED` — Prisma migrations uchun Neon direct/unpooled connection string (`-pooler` host ishlatilmaydi)
+   - `AUTH_SECRET` — tasodifiy uzun string (`openssl rand -base64 32`); mavjud loyihalarda `NEXTAUTH_SECRET` fallback sifatida ishlaydi
    - `NEXTAUTH_URL` — `https://e-mall.uz`
    - `NEXT_PUBLIC_ROOT_DOMAIN` — `e-mall.uz`
    - `NEXT_PUBLIC_REALTIME_URL` — Render'dagi realtime server manzili (masalan `https://emall-realtime.onrender.com`)
    - `REALTIME_JWT_SECRET`, `REALTIME_API_KEY` — realtime-server'dagi bilan bir xil bo'lishi shart
    - `BLOB_READ_WRITE_TOKEN` — mahsulot rasmlari uchun (Vercel Blob storage yoqilgach avtomatik beriladi)
 2. `npx prisma migrate deploy` — production bazasida migratsiyalarni qo'llash (Vercel build buyrug'iga qo'shish tavsiya etiladi: `prisma migrate deploy && next build`)
-3. `npm run seed` — production bazasida Super Admin yarating (yoki qo'lda SQL orqali)
+3. `npm run seed` — production bazasida Super Admin va boshlang'ich do'kon turlarini yarating (yoki qo'lda SQL orqali)
+
+Ro'yxatdan o'tish Telegram orqali tasdiqlashni talab qiladi. Production'da `TELEGRAM_BOT_TOKEN`,
+`TELEGRAM_WEBHOOK_SECRET` va `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` qiymatlarini haqiqiy bot
+ma'lumotlari bilan kiriting; placeholder qiymatlar bilan register yakunlanmaydi.
 
 ### Ma'lumotlar bazasi — Neon
 

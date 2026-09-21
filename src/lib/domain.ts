@@ -42,6 +42,7 @@ export function extractStoreSlug(host: string): string | null {
 /** True for app.e-mall.uz (or app.localhost in dev) — the logged-in dashboard host. */
 export function isAppHost(host: string): boolean {
   const hostname = host.split(":")[0].toLowerCase();
+  if (hostname === "localhost") return true;
   if (hostname === `${APP_SUBDOMAIN}.localhost`) return true;
   return hostname === APP_DOMAIN.toLowerCase();
 }

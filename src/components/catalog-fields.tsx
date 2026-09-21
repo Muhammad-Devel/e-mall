@@ -72,7 +72,7 @@ export function CatalogFields({
   }
 
   return (
-    <div className="space-y-4 rounded-md border p-3">
+    <div className="space-y-4 rounded-xl bg-muted/20 p-4">
       <p className="text-xs font-medium text-muted-foreground">{title}</p>
       <BarcodeLookup onFound={handleFound} onNotFound={(code) => setBarcode(code)} />
       <input type="hidden" name="soliqId" value={soliq.soliqId} />

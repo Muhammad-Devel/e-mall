@@ -83,7 +83,17 @@ export function OrderManager({ initialOrders }: { initialOrders: Order[] }) {
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1.5">
-                <Badge variant={order.status === "CANCELLED" ? "destructive" : order.status === "DELIVERED" ? "default" : "secondary"}>
+                <Badge
+                  variant={
+                    order.status === "CANCELLED"
+                      ? "destructive"
+                      : order.status === "DELIVERED"
+                        ? "success"
+                        : order.status === "PENDING"
+                          ? "warning"
+                          : "info"
+                  }
+                >
                   {STATUS_LABEL[order.status]}
                 </Badge>
                 {order.courierStatus && (

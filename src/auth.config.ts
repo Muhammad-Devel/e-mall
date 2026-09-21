@@ -6,6 +6,7 @@ import { ROOT_DOMAIN } from "@/lib/domain";
 // middleware.ts to read the session; the full config with the Credentials
 // provider lives in auth.ts and is used everywhere else (Node runtime).
 export const authConfig = {
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   providers: [],

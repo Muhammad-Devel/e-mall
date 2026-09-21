@@ -26,7 +26,7 @@ export function CyrillicButton({ text, onConverted }: { text: string; onConverte
       size="icon"
       disabled={!text.trim() || pending}
       onClick={handleClick}
-      title="Krilchaga o'tkazish"
+      title="Kiril alifbosiga o'girish"
     >
       {pending ? <Loader2 className="size-4 animate-spin" /> : <Languages className="size-4" />}
     </Button>

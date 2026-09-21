@@ -80,7 +80,7 @@ export default async function OwnerOverviewPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">{store.name}</h1>
-        <Badge variant={store.status === "ACTIVE" ? "default" : store.status === "SUSPENDED" ? "destructive" : "secondary"}>
+        <Badge variant={store.status === "ACTIVE" ? "success" : store.status === "SUSPENDED" ? "destructive" : "warning"}>
           {STATUS_LABEL[store.status]}
         </Badge>
       </div>

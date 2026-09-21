@@ -10,12 +10,29 @@ export default async function SellersPage() {
   const sellers = await prisma.user.findMany({
     where: { storeId: session.user.storeId, role: "SELLER" },
     orderBy: { createdAt: "desc" },
-    select: { id: true, fullName: true, phone: true, createdAt: true },
+    select: {
+      id: true,
+      fullName: true,
+      phone: true,
+      createdAt: true,
+      sales: {
+        select: { total: true, createdAt: true },
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
 
   return (
     <SellerManager
-      initialSellers={sellers.map((s) => ({ ...s, createdAt: s.createdAt.toISOString() }))}
+      initialSellers={sellers.map((s) => ({
+        id: s.id,
+        fullName: s.fullName,
+        phone: s.phone,
+        createdAt: s.createdAt.toISOString(),
+        saleCount: s.sales.length,
+        totalSales: s.sales.reduce((sum, sale) => sum + Number(sale.total), 0),
+        lastSaleAt: s.sales[0]?.createdAt.toISOString() ?? null,
+      }))}
     />
   );
 }

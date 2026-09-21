@@ -29,7 +29,7 @@ export default async function OwnerRequestsPage() {
           <Card key={r.id}>
             <CardHeader className="flex-row items-center justify-between space-y-0">
               <CardTitle className="text-base">{r.catalogProduct.name}</CardTitle>
-              <Badge variant={r.status === "APPROVED" ? "default" : r.status === "REJECTED" ? "destructive" : "secondary"}>
+              <Badge variant={r.status === "APPROVED" ? "success" : r.status === "REJECTED" ? "destructive" : "warning"}>
                 {STATUS_LABEL[r.status]}
               </Badge>
             </CardHeader>
