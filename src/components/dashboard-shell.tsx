@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, LayoutDashboard, Package, Users, ClipboardList, ShoppingCart, Settings, LogOut, Warehouse, Tags, Send, Bell, Store, SlidersHorizontal, Receipt, BarChart3, Tag, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Menu, LayoutDashboard, Package, Users, ClipboardList, ShoppingCart, Settings, LogOut, Warehouse, Tags, Send, Bell, Store, SlidersHorizontal, Receipt, BarChart3, Tag, CreditCard, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { DashboardNotifications } from "@/components/dashboard-notifications";
@@ -26,6 +26,7 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { href: "/dashboard/admin/users", label: "Foydalanuvchilar", icon: Users },
     { href: "/dashboard/notifications", label: "Bildirishnomalar", icon: Bell },
     { href: "/dashboard/admin/settings", label: "Sozlamalar", icon: Settings },
+    { href: "/dashboard/admin/billing", label: "Billing boshqaruvi", icon: CreditCard },
   ],
   OWNER: [
     { href: "/dashboard/owner", label: "Umumiy ko'rinish", icon: LayoutDashboard },
@@ -37,6 +38,7 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { href: "/dashboard/pos", label: "POS", icon: ShoppingCart },
     { href: "/dashboard/owner/sales", label: "Savdolar tarixi", icon: Receipt },
     { href: "/dashboard/owner/coupons", label: "Kuponlar", icon: Tag },
+    { href: "/dashboard/owner/billing", label: "Obuna va to'lovlar", icon: CreditCard },
     { href: "/dashboard/notifications", label: "Bildirishnomalar", icon: Bell },
     { href: "/dashboard/owner/settings", label: "Sozlamalar", icon: Settings },
   ],

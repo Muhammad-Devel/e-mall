@@ -1,17 +1,22 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { setStoreStatus } from "@/actions/admin";
 import { Button } from "@/components/ui/button";
 
 export function StoreStatusActions({ storeId, status }: { storeId: string; status: string }) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   function updateStatus(next: "ACTIVE" | "SUSPENDED" | "PENDING") {
     startTransition(async () => {
       const result = await setStoreStatus(storeId, next);
-      if (result.ok) toast.success("Do'kon holati yangilandi");
+      if (result.ok) {
+        toast.success("Do'kon holati yangilandi");
+        router.refresh();
+      }
       else toast.error(result.error);
     });
   }

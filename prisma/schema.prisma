@@ -67,6 +67,26 @@ enum ProductAttributeType {
   SELECT
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
+enum BillingPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum BillingProvider {
+  DEMO
+  CLICK
+  PAYME
+}
+
 model User {
   id                   String               @id @default(cuid())
   phone                String               @unique
@@ -145,8 +165,62 @@ model Store {
   stockReceipts        StockReceipt[]
   coupons              Coupon[]
   returns              Return[]
+  subscriptions        StoreSubscription[]
+  billingPayments      BillingPayment[]
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
+}
+
+model SubscriptionPlan {
+  id              String             @id @default(cuid())
+  code            String             @unique
+  name            String
+  description     String?
+  monthlyPrice    Decimal            @db.Decimal(12, 2)
+  active          Boolean            @default(true)
+  features        Json
+  subscriptions   StoreSubscription[]
+  billingPayments BillingPayment[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model StoreSubscription {
+  id        String             @id @default(cuid())
+  storeId   String
+  store     Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  planId    String
+  plan      SubscriptionPlan   @relation(fields: [planId], references: [id])
+  status    SubscriptionStatus @default(PENDING)
+  startsAt  DateTime
+  endsAt    DateTime
+  autoRenew Boolean            @default(false)
+  payments  BillingPayment[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  @@index([storeId, status])
+  @@index([endsAt])
+}
+
+model BillingPayment {
+  id             String             @id @default(cuid())
+  storeId        String
+  store          Store              @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  planId         String
+  plan           SubscriptionPlan   @relation(fields: [planId], references: [id])
+  subscriptionId  String?
+  subscription    StoreSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  provider       BillingProvider    @default(DEMO)
+  status         BillingPaymentStatus @default(PENDING)
+  amount         Decimal            @db.Decimal(12, 2)
+  providerTxId   String?
+  metadata       Json?
+  createdAt      DateTime           @default(now())
+  paidAt         DateTime?
+
+  @@index([storeId, createdAt])
+  @@index([provider, providerTxId])
 }
 
 /// A store-scoped discount code, redeemed at POS checkout. `usedCount` is
