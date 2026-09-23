@@ -46,7 +46,7 @@ Platforma administratori:
 - `/dashboard/admin/attributes` — mahsulot maydonlari
 - `/dashboard/admin/requests` — o‘zgartirish so‘rovlari
 - `/dashboard/admin/users` — foydalanuvchilar
-- `/dashboard/admin/analytics` — platforma analitikasi
+- `/dashboard/admin/analytics` — platforma analitikasi,
 
 ### OWNER
 
