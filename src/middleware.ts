@@ -83,13 +83,6 @@ export default auth((req) => {
     }
   }
 
-  // app.e-mall.uz has no landing page of its own — "/" goes straight to login.
-  if (appHost && nextUrl.pathname === "/") {
-    const url = nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
-
   // Role-gated dashboard routes
   const matchedPrefix = Object.keys(ROLE_PREFIXES).find((p) => nextUrl.pathname.startsWith(p));
   if (matchedPrefix) {

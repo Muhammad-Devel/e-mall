@@ -184,6 +184,7 @@ Secret o‘zgartirilsa mavjud sessionlar bekor bo‘ladi.
 | O‘zgaruvchi | Vazifasi |
 |---|---|
 | `NEXT_PUBLIC_ROOT_DOMAIN` | Marketplace asosiy domeni, masalan `e-mall.uz` |
+| `AUTH_COOKIE_DOMAIN` | Ixtiyoriy: custom domenlar orasida session ulashish uchun `.e-mall.uz`; Vercel preview/deployment URL’larida bo‘sh qoldiriladi |
 | `NEXT_PUBLIC_ECAFE_ROOT_DOMAIN` | e-cafe subdomen/root domeni |
 | `NEXT_PUBLIC_REALTIME_URL` | Socket.IO server URL’i |
 | `REALTIME_JWT_SECRET` | Realtime JWT imzolash; asosiy ilova va realtime serverda bir xil |
